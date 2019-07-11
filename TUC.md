@@ -1,8 +1,6 @@
 ### Token Use Clause for Praxis Smart Contracts, Praxis, and Incentum Components
 
-1. You must use PRAX in one of the following ways:
-   1. You must use the PRAX token directly in your network to pay the gas fees, or
-   2. By acquiring an equivalent amount of PRAX from an Incentum supplied source.
+1. You must acquire an equivalent amount of PRAX (to the gas fees) from an Incentum supplied source.
 2. You cannot modify any of the calculations that determine the gas fees, or that allow access to the gas fee usage.
 
 #### Notes for acquiring PRAX
