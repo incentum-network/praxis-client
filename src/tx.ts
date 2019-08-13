@@ -26,8 +26,6 @@ import {
   ILedger, IPraxisWallet, ITransactionResult,
 } from './interfaces'
 
-import ArkClient from '@arkecosystem/client'
-
 import { Identities, Interfaces, Utils } from '@incentum/crypto';
 import { 
   AccountToOutputBuilder, 
@@ -133,9 +131,8 @@ async function getResponse(address, transactionId): Promise<IPraxisResult> {
   }
 }
 
-export async function sendTransaction(transaction: Interfaces.ITransactionData): Promise<string> {
-  const client = new ArkClient(arkUrl(), 2)
-  await client.resource('transactions').create({ transactions: [transaction] })
+export async function sendTransaction(transaction: Interfaces.ITransactionData): Promise<string | undefined> {
+  const response = await axios.post(`${arkUrl()}/api/v2/transactions`, { transactions: [transaction]})
   return transaction.id
 }
 
@@ -236,6 +233,7 @@ export async function txMatchSchemas(payload: MatchSchemasPayload, ledger: ILedg
 }
 
 export async function txContractStart(payload: ContractStartPayload, ledger: ILedger, fee: Utils.BigNumber = new Utils.BigNumber(1e7 * 5)): Promise<IPraxisResult> {
+  payload.action.timestamp = Date.now()
   const builder = new ContractStartBuilder(fee)
   const transaction = builder
       .contractStart(payload)
@@ -246,6 +244,7 @@ export async function txContractStart(payload: ContractStartPayload, ledger: ILe
 }
 
 export async function txContractAction(payload: ContractActionPayload, ledger: ILedger, fee: Utils.BigNumber = new Utils.BigNumber(1e7 * 5)): Promise<IPraxisResult> {
+  payload.action.timestamp = Date.now()
   const builder = new ContractActionBuilder(fee)
   const transaction = builder
       .contractAction(payload)
