@@ -1,7 +1,7 @@
 {
     "name": "@incentum/praxis-client",
     "description": "Praxis Client for Ark",
-    "version": "0.0.33",
+    "version": "0.0.34",
     "contributors": [
         "Your Name <billd@incentum.network>"
     ],
@@ -25,7 +25,7 @@
         "updates": "../../node_modules/npm-check-updates/bin/npm-check-updates -a"
     },
     "dependencies": {
-        "@incentum/crypto": "^2.4.3",
+        "@incentum/crypto": "^2.4.4",
         "@incentum/praxis-interfaces": "^1.0.352",
         "axios": "^0.19.0",
         "bytebuffer": "^5.0.1"
