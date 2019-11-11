@@ -24,6 +24,7 @@ import { get } from 'lodash';
 
 import {
   AccountToOutputPayload,
+  ActionJson,
   CoinToOutputPayload,
   ContractActionPayload,
   ContractSearchPayload,
@@ -32,6 +33,7 @@ import {
   GetContractFromActionPayload,
   GetContractFromInstancePayload,
   GetUnusedOutputsPayload,
+  hashJson,
   InputJson,
   InstanceSearchPayload,
   KeyValuePayload,
@@ -105,18 +107,24 @@ export interface IPraxisResult {
   transactionResult: ITransactionResult;
 }
 
-export function signInputs(inputs: InputJson[], ledger: ILedger): SignatureJson[] {
+export function signInputs(inputs: InputJson[], ledger: ILedger, action: ActionJson): SignatureJson[] {
   const keyPair: Interfaces.IKeyPair = Identities.Keys.fromPassphrase(ledger.mnemonic);
   const privateKey = new EllipticPrivateKey(keyPair.privateKey)
-  return inputs.map((i) => ({ 
+  return inputs.map((i, idx) => ({ 
     inputKey: i.key,
     ledger: ledger.ledger,
     publicKey: keyPair.publicKey,
-    signature: privateKey.sign(i.outputHash),
+    signature: signInputAction(i, idx, action, privateKey),
     actionKey: i.actionKey,
     actionHash: i.actionKey,
     other: {},
   }))
+}
+
+export function signInputAction(input: InputJson, idx: number, action: ActionJson, privateKey: EllipticPrivateKey) {
+  const formStr = hashJson(action.form)
+  const signStr = `${input.outputHash}/${action.type}/${action.contractHash}/${action.nonce}/${idx}/${formStr}`
+  return privateKey.sign(signStr)
 }
 
 export interface IArkWallet {
