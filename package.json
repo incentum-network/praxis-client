@@ -1,7 +1,7 @@
 {
     "name": "@incentum/praxis-client",
     "description": "Praxis Client for Transactions",
-    "version": "0.0.39",
+    "version": "1.0.3",
     "contributors": [
         "Your Name <billd@incentum.network>"
     ],

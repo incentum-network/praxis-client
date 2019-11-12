@@ -108,23 +108,31 @@ export interface IPraxisResult {
 }
 
 export interface ISignedInput {
-  outputHash: string
+  outputHashes: string[]
   reducer: string
   contractHash: string
   actionNonce: string
-  idx: number
   form: any
 }
 
-export const createSignedInput = (input: InputJson, idx: number, action: ActionJson): ISignedInput => {
+export const createSignedInput = (inputs: InputJson[], action: ActionJson): ISignedInput => {
   return {
-    idx,
-    outputHash: input.outputHash,
+    outputHashes: inputs.map(i => i.outputHash),
     reducer: action.type,
     contractHash: action.contractHash,
     actionNonce: action.nonce,
     form: action.form,
   }
+}
+
+export type PublicKey = string
+export type Signature = string
+
+export function signString(signStr: string, ledger: ILedger): [PublicKey, Signature] {
+  const keyPair: Interfaces.IKeyPair = Identities.Keys.fromPassphrase(ledger.mnemonic);
+  const privateKey = new EllipticPrivateKey(keyPair.privateKey)
+  const signature = privateKey.sign(signStr)
+  return [keyPair.publicKey, signature]
 }
 
 export function signInputs(inputs: InputJson[], ledger: ILedger, action: ActionJson): SignatureJson[] {
@@ -134,15 +142,15 @@ export function signInputs(inputs: InputJson[], ledger: ILedger, action: ActionJ
     inputKey: i.key,
     ledger: ledger.ledger,
     publicKey: keyPair.publicKey,
-    signature: signInputAction(i, idx, action, privateKey),
+    signature: signInputAction(inputs, action, privateKey),
     actionKey: i.actionKey,
     actionHash: i.actionKey,
     other: {},
   }))
 }
 
-export function signInputAction(input: InputJson, idx: number, action: ActionJson, privateKey: EllipticPrivateKey) {
-  const signedInput = createSignedInput(input, idx, action)
+export function signInputAction(inputs: InputJson[], action: ActionJson, privateKey: EllipticPrivateKey) {
+  const signedInput = createSignedInput(inputs, action)
   const signStr = hashJson(signedInput)
   return privateKey.sign(signStr)
 }
